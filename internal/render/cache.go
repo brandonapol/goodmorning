@@ -21,7 +21,7 @@ func newDiskCache() (*diskCache, error) {
 		return nil, err
 	}
 	dir := filepath.Join(base, "goodmorning-photos", "ascii")
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return nil, err
 	}
 	return &diskCache{dir: dir}, nil
@@ -33,7 +33,7 @@ func (c *diskCache) key(path string, width int, colored bool) (string, error) {
 		return "", err
 	}
 	h := sha256.New()
-	fmt.Fprintf(h, "%s|%d|%d|%d|%v", path, info.Size(), info.ModTime().UnixNano(), width, colored)
+	_, _ = fmt.Fprintf(h, "%s|%d|%d|%d|%v", path, info.Size(), info.ModTime().UnixNano(), width, colored)
 	return hex.EncodeToString(h.Sum(nil)), nil
 }
 
@@ -54,5 +54,5 @@ func (c *diskCache) put(path string, width int, colored bool, art string) {
 	if err != nil {
 		return
 	}
-	_ = os.WriteFile(filepath.Join(c.dir, key), []byte(art), 0o644)
+	_ = os.WriteFile(filepath.Join(c.dir, key), []byte(art), 0o600)
 }

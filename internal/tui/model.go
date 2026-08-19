@@ -156,6 +156,8 @@ func (m Model) handleResize(msg tea.WindowSizeMsg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+const keyEnter = "enter"
+
 func (m Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 	case "q":
@@ -168,7 +170,7 @@ func (m Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case screenSources:
 		var cmd tea.Cmd
 		m.sourceList, cmd = m.sourceList.Update(msg)
-		if msg.String() == "enter" {
+		if msg.String() == keyEnter {
 			if item, ok := m.sourceList.SelectedItem().(sourceItem); ok {
 				m.activeSource = item.src
 				m.loading = true
@@ -181,7 +183,7 @@ func (m Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case screenAlbums:
 		var cmd tea.Cmd
 		m.albumList, cmd = m.albumList.Update(msg)
-		if msg.String() == "enter" {
+		if msg.String() == keyEnter {
 			if item, ok := m.albumList.SelectedItem().(albumItem); ok {
 				m.activeAlbum = item.album
 				m.loading = true
@@ -194,7 +196,7 @@ func (m Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case screenPhotos:
 		var cmd tea.Cmd
 		m.photoList, cmd = m.photoList.Update(msg)
-		if msg.String() == "enter" {
+		if msg.String() == keyEnter {
 			m.photoIndex = m.photoList.Index()
 			m.screen = screenDetail
 			m.art = ""

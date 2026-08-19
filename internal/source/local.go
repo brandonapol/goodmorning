@@ -121,7 +121,7 @@ func isImageFile(name string) bool {
 // searching recursively but stopping at the first match.
 func dirHasImage(dir string) (bool, error) {
 	found := false
-	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
+	err := filepath.WalkDir(dir, func(_ string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
