@@ -6,9 +6,19 @@ import (
 	"testing"
 )
 
+// setUserHomeDir points os.UserHomeDir() at dir on every platform: Go reads
+// $HOME on Unix/macOS but %USERPROFILE% on Windows, so setting only one
+// leaves the other OS reading the real home directory (which may contain
+// a real Pictures folder, as it does on the GitHub Actions Windows image).
+func setUserHomeDir(t *testing.T, dir string) {
+	t.Helper()
+	t.Setenv("HOME", dir)
+	t.Setenv("USERPROFILE", dir)
+}
+
 func TestLoad_MissingFileFallsBackToDefault(t *testing.T) {
 	dir := t.TempDir()
-	t.Setenv("HOME", dir)
+	setUserHomeDir(t, dir)
 
 	pictures := filepath.Join(dir, "Pictures")
 	if err := os.MkdirAll(pictures, 0o755); err != nil {
@@ -29,7 +39,7 @@ func TestLoad_MissingFileFallsBackToDefault(t *testing.T) {
 
 func TestLoad_MissingFileFallsBackToCwdWhenNoPictures(t *testing.T) {
 	dir := t.TempDir()
-	t.Setenv("HOME", dir) // no Pictures subdir created
+	setUserHomeDir(t, dir) // no Pictures subdir created
 
 	cfg, err := Load(filepath.Join(dir, "does-not-exist.json"))
 	if err != nil {

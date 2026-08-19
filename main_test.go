@@ -46,7 +46,11 @@ func TestBuildSources_ExplicitConfigPath(t *testing.T) {
 
 func TestBuildSources_MissingConfigFallsBackToDefault(t *testing.T) {
 	dir := t.TempDir()
-	t.Setenv("HOME", dir) // no Pictures subdir, so default is cwd
+	// os.UserHomeDir() reads $HOME on Unix/macOS but %USERPROFILE% on
+	// Windows; set both so the fallback logic sees an empty home dir
+	// on every platform (no Pictures subdir, so default is cwd).
+	t.Setenv("HOME", dir)
+	t.Setenv("USERPROFILE", dir)
 
 	sources, err := buildSources(filepath.Join(dir, "missing-config.json"), "")
 	if err != nil {

@@ -7,7 +7,7 @@ import (
 
 func newTestRenderer(t *testing.T) *Renderer {
 	t.Helper()
-	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+	setUserCacheDir(t, t.TempDir())
 	return NewRenderer()
 }
 

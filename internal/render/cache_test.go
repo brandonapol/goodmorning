@@ -8,12 +8,24 @@ import (
 
 func newTestCache(t *testing.T) *diskCache {
 	t.Helper()
-	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+	setUserCacheDir(t, t.TempDir())
 	c, err := newDiskCache()
 	if err != nil {
 		t.Fatalf("newDiskCache() error = %v", err)
 	}
 	return c
+}
+
+// setUserCacheDir points os.UserCacheDir() at dir on every platform: Go
+// reads $XDG_CACHE_HOME on Linux, always $HOME/Library/Caches on macOS
+// (XDG_CACHE_HOME is ignored there), and %LocalAppData% on Windows.
+// Setting only the Linux var leaves macOS and Windows silently writing
+// into the real user profile instead of the test's temp dir.
+func setUserCacheDir(t *testing.T, dir string) {
+	t.Helper()
+	t.Setenv("XDG_CACHE_HOME", dir)
+	t.Setenv("LocalAppData", dir)
+	t.Setenv("HOME", dir)
 }
 
 func TestDiskCache_MissThenHit(t *testing.T) {
